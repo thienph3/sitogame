@@ -3,7 +3,7 @@ from flask_socketio import SocketIO
 import os
 
 TEMPLATE_DIR = os.path.abspath('app/views')
-STATIC_DIR = os.path.abspath('app/plugins')
+STATIC_DIR = os.path.abspath('app/statics')
 
 print(TEMPLATE_DIR, STATIC_DIR)
 

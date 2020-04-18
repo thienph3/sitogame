@@ -2,8 +2,8 @@
   <html lang="en">
   <head>
     <title>Flask_Chat_App</title>
-    <link rel="stylesheet" href="https://static.zinoui.com/1.5/themes/silver/zino.core.css">
-    <link rel="stylesheet" href="https://static.zinoui.com/1.5/themes/silver/zino.canvas.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='zino.core.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='zino.canvas.css') }}">
   </head>
   <body>
 
@@ -16,13 +16,13 @@
       <input type="submit"/>
     </form>
 
-    <div id="canvas" style="border:1px solid black; height: 1000px; width: 1000px; cursor: url('../statics/handcursor_32.png'), pointer;"></div>
+    <div id="canvas" style="border:1px solid black; height: 1000px; width: 1000px; cursor: url({{ url_for('static', filename='handcursor_32.png') }}), pointer;"></div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
-    <script src="https://static.zinoui.com/1.5/compiled/zino.canvas.min.js"></script>
-    <script src="https://static.zinoui.com/js/front.min.js"></script>
+    <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='socket.io.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='zino.canvas.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='front.min.js') }}"></script>
     <script type="text/javascript">
       var socket = io.connect('http://' + document.domain + ':' + location.port);
 
