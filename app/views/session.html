@@ -2,8 +2,8 @@
   <html lang="en">
   <head>
     <title>Flask_Chat_App</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='zino.core.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='zino.canvas.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/zino.core.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/zino.canvas.css') }}">
   </head>
   <body>
 
@@ -19,12 +19,12 @@
     <div id="canvas" style="border:1px solid black; height: 1000px; width: 1000px; cursor: url({{ url_for('static', filename='handcursor_32.png') }}), pointer;"></div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='socket.io.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='zino.canvas.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='front.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/socket.io.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/zino.canvas.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/front.min.js') }}"></script>
     <script type="text/javascript">
-      var socket = io.connect('http://' + document.domain + ':' + location.port);
+      var socket = io.connect(window.location.protocol + '//' + document.domain + ':' + location.port);
 
       socket.on( 'connect', function() {
         console.log('Connected')
