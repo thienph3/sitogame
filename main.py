@@ -2,6 +2,7 @@ from flask import Flask
 from flask_socketio import SocketIO
 import os
 from app.controllers.WaitingRoomController import WaitingRoomController
+#from app.controllers.GameRoomController import GameRoomController
 
 TEMPLATE_DIR = os.path.abspath('app/views')
 STATIC_DIR = os.path.abspath('app/statics')
@@ -18,6 +19,12 @@ def waitingroom():
     # player = 'Player ' + session
     player = None
     return WaitingRoomController.join(socketio, player)
+
+#@app.route('/room/<id>', methods=['POST'])
+#def room(id):
+#    # player = 'Player ' + session
+#    player = None 
+#    return GameRoomController.join(socketio, id, player)
 
 def messageReceived(methods=['GET', 'POST']):
     print('message was received!!!')

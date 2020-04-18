@@ -25,7 +25,6 @@ $(function () {
             $( 'div.message_holder' ).append( '<div><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>' )
         };
     });
-    console.log('socket on new player join waiting room js added')
     socket.on( 'new player join waiting room', function( msg ) {
         console.log( msg );
             

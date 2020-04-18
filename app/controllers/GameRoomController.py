@@ -1,6 +1,6 @@
-from app.models import Room
+from app.models import GameRoom
 
-class RoomController():
+class GameRoomController():
     def __init__(self):
         pass
     
@@ -9,7 +9,7 @@ class RoomController():
     def removeRoom(self, room):
         pass
     
-    def addPlayerToRoom(self, room, player):
+    def join(self, roomId, player):
         room.joinBy(player)
     def removePlayerFromRoom(self, room, player):
         room.leaveBy(player)

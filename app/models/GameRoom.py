@@ -16,7 +16,8 @@ class PlayerState(Enum):
     INGAME = 4
     ENDED = 5
 
-class Room():
+class GameRoom():
+
     def __init__(self, name):
         self.name = name
         self.players = {}

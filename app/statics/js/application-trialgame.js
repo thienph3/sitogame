@@ -1,5 +1,12 @@
 $(function () {
   var elem = document.getElementById('canvas');
+  //var ctx = elem.getContext('2d');
+  var img = new Image;
+  img.src = '/statics/main_32_2.png';
+  var imgLoaded = false;
+  img.addEventListener('load', function () {
+    imgLoaded = true;
+  });
 
   var api = zino.Canvas({
       target: elem,
@@ -38,7 +45,7 @@ $(function () {
   for (var i = 0; i < 1; i++) {
       human = {
           pos: [100*(Math.floor(9*Math.random())+1), 100*(Math.floor(9*Math.random())+1)],
-          r: 20,
+          r: 16,
           dPos: [0, 0],
           t: 250
       };
@@ -96,23 +103,39 @@ $(function () {
       //  - Humans
       humans.forEach(function(item, index) {
           // Render vị trí
-          api.attr({
-              lineWidth: 4,
-              fillStyle: "#00CC66",
-              strokeStyle: "#009933"
-          }).begin().circle(item.pos[0], item.pos[1], item.r).fill().stroke();
-          // Đếm số để bắt đầu game
-          api.attr({
-              font: "normal 12pt Arial",
-              textAlign: "center",
-              textBaseline: "middle",
-              fillStyle: "white",
-              strokeStyle: "blue"
-          }).text(Math.round(item.t / 25).toString(), item.pos[0], item.pos[1]);
+          
+          //api.image('/statics/main_32.jpg', item.pos[0] - 16 - 32, item.pos[1] - 22, 32, 38);
+          if (imgLoaded)
+            elem.childNodes[0].getContext('2d').drawImage(img, item.pos[0] - 15, item.pos[1] - 20);
+          else {
+            api.attr({
+             lineWidth: 4,
+                fillStyle: "#00CC66",
+                strokeStyle: "#009933"
+            }).begin().circle(item.pos[0], item.pos[1], item.r).fill().stroke();
+
+            //elem.childNodes[0].getContext('2d').drawImage(img, 0, 0);
+            // Đếm số để bắt đầu game
+            api.attr({
+                font: "normal 12pt Arial",
+                textAlign: "center",
+                textBaseline: "middle",
+                fillStyle: "white",
+                strokeStyle: "blue"
+            }).text(Math.round(item.t / 25).toString(), item.pos[0], item.pos[1]);
+          }
           // Cập nhật position
           item.pos[0] += item.dPos[0];
           item.pos[1] += item.dPos[1];
       });
+      // Vẽ background
+      /*api.pattern("/statics/grass_32.png", "repeat", function (pattern) {
+        api.attr({
+          fillStyle: pattern,
+            strokeStyle: "#B59554",
+            lineWidth: 4
+          }).begin().circle(500, 500, 500).fill().stroke();
+      });*/
       //  - Human ở Client này
       if (me.click > 0) {
           api.attr({
@@ -176,13 +199,13 @@ $(function () {
           window.webkitRequestAnimationFrame ||
           window.mozRequestAnimationFrame ||
           function(callback) {
-              window.setTimeout(callback, 1000 / 25);
+              window.setTimeout(callback, 1000 / 5);
           };
   })();
 
   function animate() {
-      requestAnimFrame(animate);
-      draw();
+    requestAnimFrame(animate);
+    draw();
   }
   
   animate();

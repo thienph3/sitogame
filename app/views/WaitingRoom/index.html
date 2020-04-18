@@ -3,19 +3,40 @@
 {% block css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/zino.core.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/zino.canvas.css') }}">
+<style>
+  #canvas {
+    /*border:1px solid black;*/
+    height: 1000px; 
+    width: 1000px; 
+    cursor: url("{{ url_for('static', filename='handcursor_32.png') }}"), pointer; 
+    /*float: right;*/
+    background: url("{{ url_for('static', filename='grass_32.png') }}") repeat;
+  }
+</style>
 {% endblock %}
 {% block body %}
 <ul id="players" style="float: left;">
   {% for player in players %}
     {% if loop.index == index + 1 %} 
-    <li><font color="blue">{{ player }}</font></li>
+    <li><font color="blue">{{ player }}</font><button>Start new game</button></li>
     {% else %}
     <li>{{ player }}</li>
     {% endif %}
   {% endfor %}
 </ul>
+<div style="height: 1064px; width: 1064px; float: right;">
+  <div style="height: 32px; width: 32px; background: url(/statics/border_topleft_32.png); float: left;"></div>
+  <div style="height: 32px; width: 1000px; background: url(/statics/border_top_32.png) repeat; float: left;"></div>
+  <div style="height: 32px; width: 32px; background: url(/statics/border_topright_32.png); float: left;"></div>
+  
+  <div style="height: 1000px; width: 32px; background: url(/statics/border_left_32.png) repeat; float: left;"></div>
+  <div id="canvas" style="float: left;"></div>
+  <div style="height: 1000px; width: 32px; background: url(/statics/border_right_32.png) repeat; float: left;"></div>
 
-<div id="canvas" style="border:1px solid black; height: 1000px; width: 1000px; cursor: url({{ url_for('static', filename='handcursor_32.png') }}), pointer; float: right;"></div>
+  <div style="height: 32px; width: 32px; background: url(/statics/border_bottomleft_32.png); float: left;"></div>
+  <div style="height: 32px; width: 1000px; background: url(/statics/border_bottom_32.png) repeat; float: left;"></div>
+  <div style="height: 32px; width: 32px; background: url(/statics/border_bottomright_32.png); float: left;"></div>
+</div>
 {% endblock %}
 {% block js %}
 <script type="text/javascript" src="{{ url_for('static', filename='js/zino.canvas.min.js') }}"></script>
