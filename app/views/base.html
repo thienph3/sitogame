@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Sitogame{% block title %}{% endblock %}</title>
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  {% block css %}{% endblock %}
+
+</head>
+<body>
+  {% block body %}{% endblock %}
+  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/socket.io.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/application-socket.js') }}"></script>
+  {% block js %}{% endblock %}
+
+</body>
+</html>

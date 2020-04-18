@@ -1,6 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask
 from flask_socketio import SocketIO
 import os
+from app.controllers.WaitingRoomController import WaitingRoomController
 
 TEMPLATE_DIR = os.path.abspath('app/views')
 STATIC_DIR = os.path.abspath('app/statics')
@@ -13,8 +14,10 @@ app.config['SECRET_KEY'] = 'ManhMaidGameStudioSitoGameProject'
 socketio = SocketIO(app)
 
 @app.route('/')
-def sessions():
-    return render_template('session.html')
+def waitingroom():
+    # player = 'Player ' + session
+    player = None
+    return WaitingRoomController.join(socketio, player)
 
 def messageReceived(methods=['GET', 'POST']):
     print('message was received!!!')

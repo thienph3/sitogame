@@ -6,7 +6,7 @@ $(function () {
         socket.emit( 'my event', {
             data: 'User Connected'
         } );
-        var form = $( 'form' ).on( 'submit', function( e ) {
+        var form = $( '#chatForm' ).on( 'submit', function( e ) {
             e.preventDefault()
             let user_name = $( 'input.username' ).val()
             let user_input = $( 'input.message' ).val()
@@ -24,5 +24,11 @@ $(function () {
             $( 'h3' ).remove()
             $( 'div.message_holder' ).append( '<div><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>' )
         };
+    });
+    console.log('socket on new player join waiting room js added')
+    socket.on( 'new player join waiting room', function( msg ) {
+        console.log( msg );
+            
+        $( '#players' ).append( '<li>' + msg + '</li>' );
     });
 });

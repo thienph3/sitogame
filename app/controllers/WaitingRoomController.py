@@ -14,3 +14,17 @@
 # PlayerController: addPlayer, (findRoom, ready, loaded, click) & removePlayer
 # RoomController: (findRoom -> found, ready -> load, loaded -> start, started -> click)
 # Game: (init, updatePos, updateDeltaPos, checkCollision, checkPlayerDead)
+
+from flask import render_template
+from app.models.WaitingRoom import WaitingRoom
+
+class WaitingRoomController:
+
+    @staticmethod
+    def join(socketio, player = None):
+
+        wr = WaitingRoom.getInstance()
+        (players, index, isNewPlayer) = wr.join(player)
+        if isNewPlayer:
+            socketio.emit('new player join waiting room', players[index])
+        return render_template('WaitingRoom/index.html', players = players, index = index)

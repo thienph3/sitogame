@@ -5,16 +5,17 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/zino.canvas.css') }}">
 {% endblock %}
 {% block body %}
-<h3 style='color: #ccc;font-size: 30px;'>No message yet..</h3>
-<div class="message_holder"></div>
+<ul id="players" style="float: left;">
+  {% for player in players %}
+    {% if loop.index == index + 1 %} 
+    <li><font color="blue">{{ player }}</font></li>
+    {% else %}
+    <li>{{ player }}</li>
+    {% endif %}
+  {% endfor %}
+</ul>
 
-<form action="" method="POST">
-  <input type="text" class="username" placeholder="User Name"/>
-  <input type="text" class="message" placeholder="Messages"/>
-  <input type="submit"/>
-</form>
-
-<div id="canvas" style="border:1px solid black; height: 1000px; width: 1000px; cursor: url({{ url_for('static', filename='handcursor_32.png') }}), pointer;"></div>
+<div id="canvas" style="border:1px solid black; height: 1000px; width: 1000px; cursor: url({{ url_for('static', filename='handcursor_32.png') }}), pointer; float: right;"></div>
 {% endblock %}
 {% block js %}
 <script type="text/javascript" src="{{ url_for('static', filename='js/zino.canvas.min.js') }}"></script>
