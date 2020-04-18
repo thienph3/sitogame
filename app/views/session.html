@@ -35,6 +35,7 @@
           e.preventDefault()
           let user_name = $( 'input.username' ).val()
           let user_input = $( 'input.message' ).val()
+          console.log(user_name, user_input);
           socket.emit( 'my event', {
             user_name : user_name,
             message : user_input
