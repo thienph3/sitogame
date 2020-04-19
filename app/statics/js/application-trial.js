@@ -1,14 +1,14 @@
 $(function () {
   var map = {
-    width: 1000,
-    height: 1000,
+    width: 2000,
+    height: 2000,
     border: 32
   };
   var screen = {
     left: 0,
     top: 0,
-    width: window.innerWidth,
-    height: window. innerHeight,
+    width: Math.min(window.innerWidth, map.width + 2*map.border),
+    height: Math.min(window. innerHeight, map.height + 2*map.border),
     wBias: 500,
     hBias: 500
   };
