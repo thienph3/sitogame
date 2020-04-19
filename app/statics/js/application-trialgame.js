@@ -1,11 +1,45 @@
 $(function () {
   var elem = document.getElementById('canvas');
   //var ctx = elem.getContext('2d');
-  var img = new Image;
-  img.src = '/statics/main_32_2.png';
-  var imgLoaded = false;
-  img.addEventListener('load', function () {
-    imgLoaded = true;
+
+  // load humanImg
+  var humanImg = {
+    src: new Image,
+    loaded: false
+  };
+  humanImg.src.src = '/statics/main_48.png';
+  humanImg.src.addEventListener('load', function() {
+    humanImg.loaded = true;
+  });
+
+  // load monsterImg
+  var monsterImgs = [];
+  for (var i = 0; i < 3; i++) {
+    monsterImg = {
+        src: new Image,
+        loaded: false
+    };
+    monsterImg.src.src =  '/statics/covid19_' + i.toString() + '.png'
+    monsterImgs.push(monsterImg);
+  }
+  monsterImgs[0].src.addEventListener('load', function () {
+    monsterImgs[0].loaded = true;
+  });
+  monsterImgs[1].src.addEventListener('load', function () {
+    monsterImgs[1].loaded = true;
+  });
+  monsterImgs[2].src.addEventListener('load', function () {
+    monsterImgs[2].loaded = true;
+  });
+
+  // load click Icon
+  var clickImg = {
+      src: new Image,
+      loaded: false
+  };
+  clickImg.src.src = '/statics/click_32.png';
+  clickImg.src.addEventListener('load', function () {
+    clickImg.loaded = true;
   });
 
   var api = zino.Canvas({
@@ -23,9 +57,11 @@ $(function () {
 
   monsters = [];
   for (var i = 0; i < 50; i++) {
+      type = Math.floor(3*Math.random());
       monster = {
+          type: type,
           pos: [100*(Math.floor(9*Math.random())+1), 100*(Math.floor(9*Math.random())+1)],
-          r: 10*(2+Math.floor(3*Math.random())),
+          r: 8*type+16,
           dPos: [-2+Math.floor(5*Math.random()), -2+Math.floor(5*Math.random())]
       };
 
@@ -45,9 +81,11 @@ $(function () {
   for (var i = 0; i < 1; i++) {
       human = {
           pos: [100*(Math.floor(9*Math.random())+1), 100*(Math.floor(9*Math.random())+1)],
-          r: 16,
+          r: 24,
           dPos: [0, 0],
-          t: 250
+          t: 250,
+          i: 0,
+          k: 5
       };
 
       var flag = true;
@@ -84,6 +122,10 @@ $(function () {
       me.clickPos = b.pos;
   }, false);
   
+  function drawImg(img, left, top) {
+    elem.childNodes[0].getContext('2d').drawImage(img, left, top);
+  }
+
   function draw() {
       // Xóa canvas cũ
       api.clear();
@@ -91,11 +133,14 @@ $(function () {
       //  - Monsters
       monsters.forEach(function(item, index) {
           // Render vị trí
-          api.attr({
-              lineWidth: 4,
-              fillStyle: "#EED592",
-              strokeStyle: "#B59554"
-          }).begin().circle(item.pos[0], item.pos[1], item.r).fill().stroke();
+          if (monsterImgs[item.type].loaded)
+            elem.childNodes[0].getContext('2d').drawImage(monsterImgs[item.type].src, item.pos[0] - item.r, item.pos[1] - item.r);
+          else
+            api.attr({
+                lineWidth: 4,
+                fillStyle: "#EED592",
+                strokeStyle: "#B59554"
+            }).begin().circle(item.pos[0], item.pos[1], item.r).fill().stroke();
           // Cập nhật position
           item.pos[0] += item.dPos[0];
           item.pos[1] += item.dPos[1];
@@ -105,9 +150,10 @@ $(function () {
           // Render vị trí
           
           //api.image('/statics/main_32.jpg', item.pos[0] - 16 - 32, item.pos[1] - 22, 32, 38);
-          if (imgLoaded)
-            elem.childNodes[0].getContext('2d').drawImage(img, item.pos[0] - 15, item.pos[1] - 20);
-          else {
+          if (humanImg.loaded) {
+            elem.childNodes[0].getContext('2d').drawImage(humanImg.src, 48*Math.floor(item.i / item.k), 0, 48, 48, item.pos[0] - item.r, item.pos[1] - item.r, 48, 48);
+            item.i = (item.i + 1) % (4 * item.k);
+          } else {
             api.attr({
              lineWidth: 4,
                 fillStyle: "#00CC66",
@@ -128,26 +174,21 @@ $(function () {
           item.pos[0] += item.dPos[0];
           item.pos[1] += item.dPos[1];
       });
-      // Vẽ background
-      /*api.pattern("/statics/grass_32.png", "repeat", function (pattern) {
-        api.attr({
-          fillStyle: pattern,
-            strokeStyle: "#B59554",
-            lineWidth: 4
-          }).begin().circle(500, 500, 500).fill().stroke();
-      });*/
-      //  - Human ở Client này
+      //  - Human ở Client này (sự kiện click chuột)
       if (me.click > 0) {
-          api.attr({
+          if (clickImg.loaded)
+            drawImg(clickImg.src, me.clickPos[0] - 13, me.clickPos[1] - 16)
+          else
+            api.attr({
               lineWidth: 5,
               lineCap: "round",
               lineJoin: "round",
               strokeStyle: "#006633"
-          }).moveTo(me.clickPos[0] - 10, me.clickPos[1] - 10)
-          .lineTo(me.clickPos[0] + 10, me.clickPos[1] + 10)
-          .moveTo(me.clickPos[0] - 10, me.clickPos[1] + 10)
-          .lineTo(me.clickPos[0] + 10, me.clickPos[1] - 10)
-          .stroke();
+            }).moveTo(me.clickPos[0] - 10, me.clickPos[1] - 10)
+            .lineTo(me.clickPos[0] + 10, me.clickPos[1] + 10)
+            .moveTo(me.clickPos[0] - 10, me.clickPos[1] + 10)
+            .lineTo(me.clickPos[0] + 10, me.clickPos[1] - 10)
+            .stroke();
           me.click--;
       }
       // Check va chạm nhau
