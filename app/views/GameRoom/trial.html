@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %} | Phòng chờ{% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/zino.core.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/zino.canvas.css') }}">
+<style>
+  body {
+    overflow: hidden; /* ẩn scrollbar */
+    margin: 0px;
+  }
+  #maindiv11 {
+    cursor: url("{{ url_for('static', filename='handcursor_32.png') }}"), pointer; 
+    background: url("{{ url_for('static', filename='grass_32.png') }}") repeat;
+  }
+  #minimap {
+    position: absolute; 
+    background: url(/statics/grass_32.png) repeat; 
+    border: 5px solid white;
+    width: 200px;
+    height: 200px;
+  }
+</style>
+{% endblock %}
+{% block body %}
+<div id="maindiv">
+  <div id="maindiv00" style="background: url(/statics/border_topleft_32.png); float: left;"></div>
+  <div id="maindiv01" style="background: url(/statics/border_top_32.png) repeat; float: left;"></div>
+  <div id="maindiv02" style="background: url(/statics/border_topright_32.png); float: left;"></div>
+  
+  <div id="maindiv10" style="background: url(/statics/border_left_32.png) repeat; float: left;"></div>
+  <div id="maindiv11" style="background: url(/statics/grass_32.png) repeat; float: left;"></div>
+  <div id="maindiv12" style="background: url(/statics/border_right_32.png) repeat; float: left;"></div>
+
+  <div id="maindiv20" style="background: url(/statics/border_bottomleft_32.png); float: left;"></div>
+  <div id="maindiv21" style="background: url(/statics/border_bottom_32.png) repeat; float: left;"></div>
+  <div id="maindiv22" style="background: url(/statics/border_bottomright_32.png); float: left;"></div>
+</div>
+<img id="minimap"></img>
+{% endblock %}
+{% block js %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/zino.canvas.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/application-trial.js') }}"></script>
+{% endblock %}

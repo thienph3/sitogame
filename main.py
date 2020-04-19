@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_socketio import SocketIO
 import os
 from app.controllers.WaitingRoomController import WaitingRoomController
@@ -19,6 +19,9 @@ def waitingroom():
     # player = 'Player ' + session
     player = None
     return WaitingRoomController.join(socketio, player)
+@app.route('/trial')
+def trial():
+    return render_template('GameRoom/trial.html')
 
 #@app.route('/room/<id>', methods=['POST'])
 #def room(id):

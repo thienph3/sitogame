@@ -203,10 +203,10 @@ $(function () {
           item.pos[0] += item.dPos[0];
           item.pos[1] += item.dPos[1];
       });
-      //  - Collision
-      if (collisionImg.loaded && collisionDict) {
-        drawCollision(collisionDict);
-      }
+      //  - Minimap
+      document.getElementById('image_for_crop').src = elem.childNodes[0].toDataURL();
+      document.getElementById('image_for_crop').style.top = (elem.offsetTop + 768).toString() + 'px';
+      document.getElementById('image_for_crop').style.left = (elem.offsetLeft + 32).toString() + 'px';
       //  - Human ở Client này (sự kiện click chuột)
       if (me.click > 0) {
           if (clickImg.loaded)
@@ -223,6 +223,10 @@ $(function () {
             .lineTo(me.clickPos[0] + 10, me.clickPos[1] - 10)
             .stroke();
           me.click--;
+      }
+      //  - Collision
+      if (collisionImg.loaded && collisionDict) {
+        drawCollision(collisionDict);
       }
       // Check va chạm nhau
       //  - Monster & Monster
