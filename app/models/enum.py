@@ -1,4 +1,5 @@
-from enum import Enum
+from aenum import Enum 
+
 
 class Frame(Enum):
     FPS = 25
