@@ -4,7 +4,7 @@ class RoomState(Enum):
     INIT = 0
     FULL = 1
     #ALLREADY = 2
-    LOADING = 3
+    LOADING = 3 #loading game in each client 
     START = 4
     END = 5
 
