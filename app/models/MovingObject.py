@@ -19,7 +19,9 @@ class MovingObject():
                  crrPos=(random.randint(0, int(Frame.FRAME_WEIGHT.value)), random.randint(0, int(Frame.FRAME_HEIGHT.value))), 
                  speed=4, 
                  deltaVector=(0, 0),
-                 isDead=False
+                 isDead=False, 
+                 *args,
+                 **kwargs
                  ): 
         self.color = color # vd (255, 0, 0)
         self.radius = radius
@@ -103,8 +105,10 @@ if __name__ == "__main__":
     print('distance to monster' , a_human.calcDistanceToObject(b_monster))
     print('deltapos', a_human.deltaPos)
     print('delta', a_human.delta)
+    print('deltaVector', a_human.deltaVector)
     print('topLeft', a_human.topLeft)
     print('curr', a_human.crrPos)
     a_human.whenClick((2,3))
     print(a_human.crrPos)
+    print(a_human.deltaVector)
 
