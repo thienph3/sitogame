@@ -5,9 +5,10 @@ import random
 class Humans(MovingObject):
     def __init__(self,
                  color, 
-                 radius, 
-                 **kwargs):
-        super(Humans, self).__init__(color, radius, **args, **kwargs)
+                 radius):
+        super().__init__(color, radius)
+        # self.color = color
+        # self.radius = radius
         
     def checkDead(self, **monsters):
         for monster in monsters:
