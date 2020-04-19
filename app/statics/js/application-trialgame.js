@@ -42,6 +42,16 @@ $(function () {
     clickImg.loaded = true;
   });
 
+  // load Collision Image
+  var collisionImg = {
+      src: new Image,
+      loaded: false
+  };
+  collisionImg.src.src = '/statics/collision_16.png';
+  collisionImg.src.addEventListener('load', function () {
+    collisionImg.loaded = true;
+  });
+
   var api = zino.Canvas({
       target: elem,
       width: 1000,
@@ -53,6 +63,9 @@ $(function () {
   }
   function isCollision(a, b) {
       return dist(a, b) <= 0;
+  }
+  function getCollisionPoint(a, b) {
+      return [(a.pos[0] * b.r + b.pos[0] * a.r) / (a.r + b.r), (a.pos[1] * b.r + b.pos[1] * a.r) / (a.r + b.r)]
   }
 
   monsters = [];
@@ -125,7 +138,23 @@ $(function () {
   function drawImg(img, left, top) {
     elem.childNodes[0].getContext('2d').drawImage(img, left, top);
   }
+  function drawCollision(collisionDict) {
+    for (var key in collisionDict) {
+        if (collisionDict.hasOwnProperty(key) && key != 'count') {           
+            a = collisionDict[key];
+            //console.log(a);
+            elem.childNodes[0].getContext('2d').drawImage(collisionImg.src, 0, 0, 16, 16, a.x - a.r, a.y - a.r , 2*a.r, 2*a.r);
+            a.r += a.delta;
+            if (a.r >= 16) a.delta = -a.delta;
+            else if (a.r <= 0) { 
+                a.delta = 0;
+                delete collisionDict[key];
+            }
+        }
+    }
+  }
 
+  var collisionDict = {'count': 1, 0: {left: 100, top: 100, r: 1, delta: 1}};
   function draw() {
       // Xóa canvas cũ
       api.clear();
@@ -174,6 +203,10 @@ $(function () {
           item.pos[0] += item.dPos[0];
           item.pos[1] += item.dPos[1];
       });
+      //  - Collision
+      if (collisionImg.loaded && collisionDict) {
+        drawCollision(collisionDict);
+      }
       //  - Human ở Client này (sự kiện click chuột)
       if (me.click > 0) {
           if (clickImg.loaded)
@@ -196,9 +229,19 @@ $(function () {
       for (var i = 0; i < monsters.length; i++)
           for (var j = i + 1; j < monsters.length; j++)
               if (isCollision(monsters[i], monsters[j])) {
-                  t = monsters[i].dPos;
+                  var t = monsters[i].dPos;
                   monsters[i].dPos = monsters[j].dPos;
                   monsters[j].dPos = t;
+
+                  t = getCollisionPoint(monsters[i], monsters[j]);
+                  collisionDict['count']++;
+                  collisionDict[collisionDict['count']] = {
+                      x: t[0],
+                      y: t[1],
+                      r: 0,
+                      delta: Math.round((monsters[i].r + monsters[j].r) / 8) / 4,
+                      rMax: Math.round((monsters[i].r + monsters[j].r) / 8)
+                  }
               }
       //  - Monster & Human
       //  - End game
@@ -236,11 +279,14 @@ $(function () {
   }
 
   window.requestAnimFrame = (function() {
+      //return function(callback) {
+      //  window.setTimeout(callback, 1000 / 50);
+      //};
       return window.requestAnimationFrame ||
           window.webkitRequestAnimationFrame ||
           window.mozRequestAnimationFrame ||
           function(callback) {
-              window.setTimeout(callback, 1000 / 5);
+              window.setTimeout(callback, 1000 / 25);
           };
   })();
 
