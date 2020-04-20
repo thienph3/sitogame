@@ -12,7 +12,7 @@ $(function () {
     wBias: 500,
     hBias: 500
   };
-  console.log(screen);
+  //console.log(screen);
 
   var hIndex = 0, mIndex = 1, clIndex = 4, coIndex = 5; // image Index of human, monster, click & collision
   var num_type_m = 3;
@@ -30,6 +30,12 @@ $(function () {
   var DOMmaindiv11 = document.getElementById('maindiv11');
   var DOMminimap = document.getElementById('minimap');
   var gameState = 0; // INIT
+
+  function updateScreen(left, top) {
+    screen.left = Math.max(0, Math.round(left));
+    screen.top = Math.max(0, Math.round(top));
+    $maindiv11.css({'background-position': (screen.left % 32) + 'px ' + (screen.top % 32) + 'px'});
+  }
 
   // setSize of maindiv
   (function setSize() {
@@ -50,6 +56,12 @@ $(function () {
   })();
 
   function startGame() {
+    var startTime = Date.now(),
+        currentTime = startTime,
+        lastTime = startTime,
+        passTime = 0, // between startTime & currentTime, by seconds.
+        diff = 0; // between lastTime & currentTime, by micro seconds.
+
     function dist(a, b) {
       return Math.sqrt(Math.pow(a.pos[0] - b.pos[0], 2) + Math.pow(a.pos[1] - b.pos[1], 2)) - a.r - b.r;
     }
@@ -71,7 +83,7 @@ $(function () {
           type: type,
           pos: [Math.floor((width-2*max_r)*Math.random())+max_r, Math.floor((height-2*max_r)*Math.random())+max_r],
           r: 8*type+16,
-          dPos: [-2+Math.floor(5*Math.random()), -2+Math.floor(5*Math.random())]
+          dPos: [-120+Math.floor(241*Math.random()), -120+Math.floor(241*Math.random())] // -120 -> 120, speed per second.
         };
     
         var flag = true;
@@ -93,12 +105,14 @@ $(function () {
       var humans = [];
       for (var i = 0; i < num_humans; i++) {
         human = {
+          name: i == 0 ? 'me' : 'Human ' + i, 
           pos: [Math.floor((width-2*max_r)*Math.random())+max_r, Math.floor((height-2*max_r)*Math.random())+max_r],
           r: 24,
-          dPos: [0, 0],
+          dPos: [0, 0], // speed per second.
           t: 250, // time bất tử đầu game
-          i: 0, // render chuyển động
-          k: 5 // render chuyển động
+          i: 5, // render chuyển động
+          k: 5, // render chuyển động
+          state: 0 // INIT in (INIT, MOVING, DEAD)
         };
     
         var flag = true;
@@ -110,12 +124,14 @@ $(function () {
             
         if (flag) humans.push(human);
         if (i == 0) {// me
-          screen.left = Math.max(0, human.pos[0] - (screen.width - 2*map.border)/2);
-          screen.top = Math.max(0, human.pos[0] - (screen.height - 2*map.border)/2);
+          // update screen for main in center
+          updateScreen(human.pos[0] - (screen.width - 2*map.border)/2, human.pos[0] - (screen.height - 2*map.border)/2);
         }
       }
       return humans;
-    })(1);
+    })(10);
+    var number_of_survival = humans.length;
+    var deadList = [];
 
 // TODO: START
 
@@ -126,38 +142,47 @@ $(function () {
     height: screen.height - 2*map.border
 });
 var canvas = DOMmaindiv11.childNodes[0].getContext('2d');
+canvas.font = '48px serif';
 
 var me = humans[0];
 me.click = 0;
 
 // Add event listener for `click` events.
 DOMmaindiv11.addEventListener('click', function(event) {
+  if (me.state == 0) // INIT
+    me.state = 1
+  if (me.state != 2) { // NOT DEAD
     var a = {pos: me.pos, r: 0}
     var elemLeft = DOMmaindiv11.offsetLeft, elemTop = DOMmaindiv11.offsetTop;
     var b = {pos: [event.pageX - elemLeft + screen.left, event.pageY - elemTop + screen.top], r: 0};
     //console.log(event)
     var d = dist(a, b);
-    var speed = 3.0;
+    var speed = 240; // speed per second.
     //console.log(dist, me, t, d);
     me.dPos = [
-        (-speed*a.pos[0] + speed*b.pos[0]) / (d + speed), 
-        (-speed*a.pos[1] + speed*b.pos[1]) / (d + speed)
+        Math.round((-speed*a.pos[0] + speed*b.pos[0]) / (d + speed)), 
+        Math.round((-speed*a.pos[1] + speed*b.pos[1]) / (d + speed))
     ];
     
     me.click = 25;
     me.clickPos = b.pos;
+  } else if (gameState != 2) { // GAME NOT ENDED
+    alert('You dead!');
+  }
 }, false);
 
+// update screen when mouse out
 $maindiv11.mouseout(function(a) {
-    console.log('Mouseout', a.offsetX, a.offsetY);
+    //console.log('Mouseout', a.offsetX, a.offsetY);
     if (a.offsetX < 0)
-        screen.left = Math.max(0, screen.left + 1*a.offsetX);
+      updateScreen(screen.left + 1*a.offsetX, screen.top);
     if (a.offsetX > screen.width - 2*map.border)
-        screen.left = Math.min(map.width - screen.width + 2*map.border, screen.left + 1*(a.offsetX - screen.width + 2*map.border));
+      updateScreen(Math.min(map.width - screen.width + 2*map.border, screen.left + 1*(a.offsetX - screen.width + 2*map.border)), screen.top);
+      
     if (a.offsetY < 0)
-        screen.top = Math.max(0, screen.top + 1*a.offsetY);
+      updateScreen(screen.left, Math.max(0, screen.top + 1*a.offsetY));
     if (a.offsetY > screen.height - 2*map.border)
-        screen.top = Math.min(map.height - screen.height + 2*map.border, screen.top + 1*(a.offsetY - screen.height + 2*map.border));
+      updateScreen(screen.left, Math.min(map.height - screen.height + 2*map.border, screen.top + 1*(a.offsetY - screen.height + 2*map.border)));
 });
 
 function drawCollision(collisionDict) {
@@ -190,6 +215,59 @@ function checkOnScreen(object) {
 }
 
 function draw() {
+  lastTime = currentTime;
+  currentTime = Date.now();
+  passTime = Math.round((currentTime - startTime) / 1000); // by seconds
+  diff = Math.round(currentTime - lastTime); // by micro seconds.
+  
+  function passTimeToString() {
+    function pad(n) {
+      var s = '0' + n;
+      return s.substr(s.length - 2);
+    }
+
+    var hh = Math.floor(passTime / 3600), 
+        mm = Math.floor((passTime % 3600) / 60), 
+        ss = passTime % 60;
+    return pad(hh) + ':' + pad(mm) + ':' + pad(ss); 
+  }
+
+  // Check va chạm nhau
+  //  - Monster & Monster
+  for (var i = 0; i < monsters.length; i++)
+      for (var j = i + 1; j < monsters.length; j++)
+          if (isCollision(monsters[i], monsters[j])) {
+              var t = monsters[i].dPos;
+              monsters[i].dPos = monsters[j].dPos;
+              monsters[j].dPos = t;
+
+              t = getCollisionPoint(monsters[i], monsters[j]);
+              collisionDict['count']++;
+              collisionDict[collisionDict['count']] = {
+                  x: t[0],
+                  y: t[1],
+                  r: 0,
+                  delta: Math.round((monsters[i].r + monsters[j].r) / 8) / 4,
+                  rMax: Math.round((monsters[i].r + monsters[j].r) / 8)
+              }
+          }
+  //  - Monster & Human
+  humans.forEach(function(human, ih, humans) {
+    if (human.state != 2) { // NOT DEAD
+      if (human.t > 0) {
+        human.t--;
+      } else {
+        monsters.forEach(function(monster, im, monsters) {
+          if (isCollision(monster, human)) {
+            human.state = 2;
+            number_of_survival--;
+            deadList.push(human.name + ' dead at ' + passTimeToString());
+          }
+        });
+      }
+    }
+  });
+
     // Xóa canvas cũ
     api.clear();
     // Vẽ lại canvas mới
@@ -199,31 +277,38 @@ function draw() {
         if (checkOnScreen(monster))
           canvas.drawImage(images[monster.type + mIndex].src, monster.pos[0] - monster.r - screen.left, monster.pos[1] - monster.r - screen.top);
         // Cập nhật position
-        monster.pos[0] += monster.dPos[0];
-        monster.pos[1] += monster.dPos[1];
+        monster.pos[0] += Math.round(monster.dPos[0] * diff / 1000);
+        monster.pos[1] += Math.round(monster.dPos[1] * diff / 1000);
     });
     //  - Humans
     humans.forEach(function(human, index) {
-        // Render vị trí
-        if (checkOnScreen(human)) {
-          canvas.drawImage(images[hIndex].src, 48*Math.floor(human.i / human.k), 0, 48, 48, human.pos[0] - human.r - screen.left, human.pos[1] - human.r - screen.top, 48, 48);
-        }
-        // Cập nhật position
-        human.pos[0] += human.dPos[0];
-        human.pos[1] += human.dPos[1];
+      // Update screen when moving
+      if (index == 0) {// me
+        if (human.pos[0] - human.r < screen.left + screen.wBias)
+          updateScreen(human.pos[0] - human.r - screen.wBias, screen.top);
+        if (human.pos[0] + human.r > screen.left + screen.width - screen.wBias)
+          updateScreen(Math.min(map.width - screen.width + 2*map.border, human.pos[0] + human.r - screen.width + screen.wBias), screen.top);
+        if (human.pos[1] - human.r < screen.top + screen.hBias)
+          updateScreen(screen.left, human.pos[1] - human.r - screen.hBias);
+        if (human.pos[1] + human.r > screen.top + screen.height - screen.hBias)
+          updateScreen(screen.left, Math.min(map.height - screen.height + 2*map.border, human.pos[1] + human.r - screen.height + screen.hBias));
+      } else {
+        canvas.globalAlpha = 0.4;
+      }
+      // Render vị trí
+      if (checkOnScreen(human)) {
+        canvas.drawImage(images[hIndex].src, 48*Math.floor(human.i / human.k), 0, 48, 48, human.pos[0] - human.r - screen.left, human.pos[1] - human.r - screen.top, 48, 48);
+      }
+      // Cập nhật position
+      if (human.state != 2) { // NOT DEAD
+        human.pos[0] += Math.round(human.dPos[0] * diff / 1000);
+        human.pos[1] += Math.round(human.dPos[1] * diff / 1000);
         human.i = (human.i + 1) % (4 * human.k);
-        // Cập nhật screen
-        if (index == 0) {// me
-            if (human.pos[0] - human.r < screen.left + screen.wBias)
-                screen.left = Math.max(0, human.pos[0] - human.r - screen.wBias);
-            if (human.pos[0] + human.r > screen.left + screen.width - screen.wBias)
-                screen.left = Math.min(map.width - screen.width + 2*map.border, human.pos[0] + human.r - screen.width + screen.wBias);
-            if (human.pos[1] - human.r < screen.top + screen.hBias)
-                screen.top = Math.max(0, human.pos[1] - human.r - screen.hBias);
-            if (human.pos[1] + human.r > screen.top + screen.height - screen.hBias)
-                screen.top = Math.min(map.height - screen.height + 2*map.border, human.pos[1] + human.r - screen.height + screen.hBias);
-        }
+      } else {
+        human.i = human.k;
+      }  
     });
+    canvas.globalAlpha = 1;
     //  - Minimap
     DOMminimap.src = DOMmaindiv11.childNodes[0].toDataURL();
     DOMminimap.style.top = (DOMmaindiv11.offsetTop + 768).toString() + 'px';
@@ -237,43 +322,32 @@ function draw() {
     if (gameState == 1 && collisionDict) {
       drawCollision(collisionDict);
     }
-    // Check va chạm nhau
-    //  - Monster & Monster
-    for (var i = 0; i < monsters.length; i++)
-        for (var j = i + 1; j < monsters.length; j++)
-            if (isCollision(monsters[i], monsters[j])) {
-                var t = monsters[i].dPos;
-                monsters[i].dPos = monsters[j].dPos;
-                monsters[j].dPos = t;
-
-                t = getCollisionPoint(monsters[i], monsters[j]);
-                collisionDict['count']++;
-                collisionDict[collisionDict['count']] = {
-                    x: t[0],
-                    y: t[1],
-                    r: 0,
-                    delta: Math.round((monsters[i].r + monsters[j].r) / 8) / 4,
-                    rMax: Math.round((monsters[i].r + monsters[j].r) / 8)
-                }
-            }
-    //  - Monster & Human
-    //  - End game
-    humans.forEach(function(human, ih, humans) {
-        if (human.t > 0) {
-            human.t--;
-        } else {
-            monsters.forEach(function(monster, im, monsters) {
-                if (isCollision(monster, human)) {
-                    monsters.forEach(function(monster) {
-                        monster.dPos = [0, 0];
-                    });
-                    humans.forEach(function(human) {
-                        human.dPos = [0, 0];
-                    });
-                }
-            });
-        }
+    //  - Draw some Text
+    canvas.font = '48px serif';
+    canvas.fillStyle = 'black';
+    canvas.textAlign = 'left';
+    canvas.fillText(screen.left + ' ' + screen.top, 32, 64);
+    canvas.textAlign = 'right';
+    canvas.fillText(passTimeToString(), screen.width - 2*map.border - 32, 64);
+    canvas.textAlign = 'center';
+    canvas.fillText(number_of_survival + '/' + humans.length, Math.round((screen.width - 2*map.border)/2), 64);
+    
+    canvas.font = '15px serif';
+    canvas.textAlign = 'right';
+    deadList.forEach(function(item, index) {
+      if (item.substr(0, 2) == 'me') {
+        canvas.fillStyle = '#660000';
+      } else {
+        canvas.fillStyle = '#3300CC';
+      }
+      canvas.fillText(item, screen.width - 2*map.border - 32, screen.height - 2*map.border - 20*(index + 1));
     });
+    
+    //  - End GAME
+    if (number_of_survival == 1) {
+      gameState = 2; // ENDED
+    }
+
     // Check va chạm tường
     //  - Monsters
     monsters.forEach(function(item, index) {
@@ -304,8 +378,10 @@ window.requestAnimFrame = (function() {
 })();
 
 function animate() {
-  requestAnimFrame(animate);
-  draw();
+  if (gameState != 2) { // NOT ENDED
+    requestAnimFrame(animate);
+    draw();
+  }
 }
 
 animate();
