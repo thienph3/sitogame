@@ -23,21 +23,25 @@ class GameRoom():
         self.players = {}
         self.state = RoomState.INIT
         self.number_of_players = {
-            PlayerState.JOINROOM = 0,
-            PlayerState.READY = 0,
-            PlayerState.INLOADING = 0,
-            PlayerState.INGAME = 0
+            PlayerState.JOINROOM: 0,
+            PlayerState.READY: 0,
+            PlayerState.INLOADING: 0,
+            PlayerState.INGAME: 0
         }
         self.MAX = 3
 
     def isFull(self):
         return False
+
     def isEmpty(self):
         return False
+
     def add(self, player):
         return False
+
     def remove(self, player):
         return False
+        
     def changeState(self, newState):
         return False
 

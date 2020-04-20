@@ -1,16 +1,7 @@
-class Singleton:
-    __instance = None
+class Singleton(type):
+    _instances = {}
+    def __call__(self, *args, **kwargs):
+        if self not in self._instances:
+            self._instances[self] = super(Singleton, self).__call__(*args, **kwargs)
 
-    @staticmethod 
-    def getInstance():
-        """ Static access method. """
-        if Singleton.__instance == None:
-            Singleton()
-        return Singleton.__instance
-    
-    def __init__(self):
-        """ Virtually private constructor. """
-        if Singleton.__instance != None:
-            raise Exception("This class is a singleton!")
-        else:
-            Singleton.__instance = self
+        return self._instances[self]

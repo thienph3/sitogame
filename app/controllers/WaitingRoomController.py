@@ -15,16 +15,14 @@
 # RoomController: (findRoom -> found, ready -> load, loaded -> start, started -> click)
 # Game: (init, updatePos, updateDeltaPos, checkCollision, checkPlayerDead)
 
-from flask import render_template
+from flask import Blueprint, render_template
 from app.models.WaitingRoom import WaitingRoom
 
-class WaitingRoomController:
+waiting_room = Blueprint('waiting_room', __name__, url_prefix='/waiting-room')
+wr = WaitingRoom()
 
-    @staticmethod
-    def join(socketio, player = None):
+@waiting_room.route('/')
+def join(player = None):
+    (players, index, isNewPlayer) = wr.join(player)
+    return render_template('WaitingRoom/index.html', players = players, index = index)
 
-        wr = WaitingRoom.getInstance()
-        (players, index, isNewPlayer) = wr.join(player)
-        if isNewPlayer:
-            socketio.emit('new player join waiting room', players[index])
-        return render_template('WaitingRoom/index.html', players = players, index = index)

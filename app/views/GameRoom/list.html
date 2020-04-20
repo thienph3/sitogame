@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %} | Chào mừng đến với game {% endblock %}
+{% block body %}
+    <ul id="players" style="float: left;">
+        {% for room in rooms %}
+                <li><font color="blue">{{ room }}</font>
+                    <button onclick="join()" data-room="{{ room}}">join</button>
+                </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block js %}
+    <script>
+        const join = function() {
+            // TODO: remove user name and get theme from session
+            username = prompt('Nhập username')
+            localStorage.setItem("username", username);
+
+            location.href=`/game-room/${$(this).data("room")}`
+        }
+    </script>
+{% endblock %}

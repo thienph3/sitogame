@@ -1,33 +1,38 @@
 $(function () {
-    var socket = io.connect(window.location.protocol + '//' + document.domain + ':' + location.port);
+    var roomId = window.location.pathname.split('/').pop()
+    var socket = io.connect('/game-room');
 
-    socket.on( 'connect', function() {
-        //console.log('Connected')
-        socket.emit( 'my event', {
-            data: 'User Connected'
-        } );
-        var form = $( '#chatForm' ).on( 'submit', function( e ) {
-            e.preventDefault()
-            let user_name = $( 'input.username' ).val()
-            let user_input = $( 'input.message' ).val()
-            //console.log(user_name, user_input);
-            socket.emit( 'my event', {
-                user_name : user_name,
-                message : user_input
-            } );
-            $( 'input.message' ).val( '' ).focus()
-        } );
-    } );
-    socket.on( 'my response', function( msg ) {
-        console.log( msg );
+    socket.on('connect', () => {
+        socket.emit('join', { roomId }, () => {
+            $('form' ).on('submit', function( e ) {
+                e.preventDefault()
+                let username = localStorage.getItem('username');
+                let user_input = $('input.message').val()
+                
+                if (socket.connected) {
+                    socket.emit('send_message', {
+                        roomId: roomId,
+                        user_name : username,
+                        message : user_input
+                    })
+                    $( 'input.message' ).val( '' ).focus()
+                } else {
+                    // TODO: SocketIO alway reconnect, So we should show some warning for user.
+                }
+            })
+        })
+
+        window.addEventListener("unload", () => {
+            socket.emit('leave', { roomId })
+            socket.close()
+        })
+    })
+
+
+    socket.on('received_message', function( msg ) {
         if( typeof msg.user_name !== 'undefined' ) {
-            $( 'h3' ).remove()
-            $( 'div.message_holder' ).append( '<div><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>' )
-        };
-    });
-    socket.on( 'new player join waiting room', function( msg ) {
-        console.log( msg );
-            
-        $( '#players' ).append( '<li>' + msg + '</li>' );
-    });
+            $('h3').remove()
+            $('div.message_holder').append( '<div><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>' )
+        }
+    })
 });
