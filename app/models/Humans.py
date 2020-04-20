@@ -1,4 +1,4 @@
-from app.models import MovingObject
+from app.models.MovingObject import MovingObject
 from app.models.enum import Frame 
 import random
 
