@@ -106,6 +106,7 @@ $(function () {
       for (var i = 0; i < num_humans; i++) {
         human = {
           name: i == 0 ? 'me' : 'Human ' + i, 
+          type: i == 0 ? 'me' : 'bot', // for bot
           pos: [Math.floor((width-2*max_r)*Math.random())+max_r, Math.floor((height-2*max_r)*Math.random())+max_r],
           r: 24,
           dPos: [0, 0], // speed per second.
@@ -148,7 +149,7 @@ var me = humans[0];
 me.click = 0;
 
 // Add event listener for `click` events.
-DOMmaindiv11.addEventListener('click', function(event) {
+function moveClick (me, event) {
   if (me.state == 0) // INIT
     me.state = 1
   if (me.state != 2) { // NOT DEAD
@@ -167,8 +168,11 @@ DOMmaindiv11.addEventListener('click', function(event) {
     me.click = 25;
     me.clickPos = b.pos;
   } else if (gameState != 2) { // GAME NOT ENDED
-    alert('You dead!');
+    //alert('You dead!');
   }
+}
+DOMmaindiv11.addEventListener('click', function(event) {
+  moveClick(me, event);
 }, false);
 
 // update screen when mouse out
@@ -265,6 +269,15 @@ function draw() {
           }
         });
       }
+      if (true) {//(human.type == 'bot') {
+        movingBot(monsters, human, dist, function(goingPos) {
+          var elemLeft = DOMmaindiv11.offsetLeft, elemTop = DOMmaindiv11.offsetTop;
+          moveClick(human, {
+            'pageX': Math.min(screen.width-2*map.border, Math.max(0, goingPos[0] + elemLeft - screen.left)), 
+            'pageY': Math.min(screen.height-2*map.border, Math.max(0, goingPos[1] + elemTop - screen.top))
+          });
+        })
+      }
     }
   });
 
@@ -282,6 +295,7 @@ function draw() {
     });
     //  - Humans
     humans.forEach(function(human, index) {
+      //if (index == 1) console.log(human.pos)
       // Update screen when moving
       if (index == 0) {// me
         if (human.pos[0] - human.r < screen.left + screen.wBias)
